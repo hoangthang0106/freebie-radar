@@ -40,7 +40,7 @@ Nếu 18895 đang bị dùng, không Deploy cho tới khi xác định port th�
 
 Không nhập secret vào GitHub, không đưa vào tên Stack. Không cần thêm biến `PORT` ở Portainer, vì cổng nội bộ đã đặt **18895** ngay trong Compose.
 
-Tùy chọn `RADAR_IMAGE` để pin phiên bản upstream; mặc định `zichuanlan/freebie-radar:latest`. Theo quy ước **host port = container port**, không tự đổi `RADAR_HOST_PORT` mà không đồng thời cập nhật cổng lắng nghe, mapping và healthcheck trong Compose.
+Tùy chọn `RADAR_IMAGE` để pin phiên bản upstream; mặc định `zichuanlan/freebie-radar:latest`. Theo quy ước **host port = container port**, Compose cố định **18895:18895**. Nếu sau này thay port, phải sửa đồng bộ mapping, biến `PORT` và healthcheck trong Compose.
 
 ## Triển khai & xác minh
 
