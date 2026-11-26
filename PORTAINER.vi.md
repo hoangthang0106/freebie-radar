@@ -5,7 +5,7 @@ Phiên bản hướng dẫn cho fork: https://github.com/hoangthang0106/freebie-
 ## Cổng theo thứ tự cài đặt
 
 - **SpiderFoot**: host port **18894** (đã cấu hình trước; trạng thái chạy thực tế phải xác minh).
-- **Freebie Radar**: host port **18895** → container port **8788**.
+- **Freebie Radar**: host port **18895** → container port **18895**.
 - **Không tự vượt lên 18899 chỉ vì các ứng dụng khác mới được dự kiến mà chưa xác nhận đã triển khai.**
 - **Cảnh báo**: Fork OpenOSINT cũ cũng được chuẩn bị với host port 18895. Không triển khai đồng thời hai dịch vụ với cùng host IP:port. Khi muốn cài OpenOSINT, kiểm tra port và cấp lại theo hệ thống đang chạy.
 
@@ -38,14 +38,14 @@ Nếu 18895 đang bị dùng, không Deploy cho tới khi xác định port th�
 | `LAN_IP` | IP LAN thực tế thuộc Docker VM/LXC |
 | `ADMIN_TOKEN` | Mật khẩu/token quản trị mạnh do bạn tự đặt (nên ≥24 ký tự) |
 
-Không nhập secret vào GitHub, không đưa vào tên Stack. Không cần biến `PORT`, vì cổng nội bộ cố định 8788.
+Không nhập secret vào GitHub, không đưa vào tên Stack. Không cần thêm biến `PORT` ở Portainer, vì cổng nội bộ đã đặt **18895** ngay trong Compose.
 
-Tùy chọn `RADAR_IMAGE` để pin phiên bản upstream; mặc định `zichuanlan/freebie-radar:latest`. `RADAR_HOST_PORT` mặc định 18895, chỉ đổi sau khi kiểm tra và cập nhật sổ port.
+Tùy chọn `RADAR_IMAGE` để pin phiên bản upstream; mặc định `zichuanlan/freebie-radar:latest`. Theo quy ước **host port = container port**, không tự đổi `RADAR_HOST_PORT` mà không đồng thời cập nhật cổng lắng nghe, mapping và healthcheck trong Compose.
 
 ## Triển khai & xác minh
 
 - Nhấn **Deploy the stack**. Chỉ có service/container `radar`, không Caddy hoặc FlareSolverr.
-- Vào Portainer → Containers → Freebie Radar. Kiểm tra Running/Healthy, Published Port `LAN_IP:18895:8788/tcp`.
+- Vào Portainer → Containers → Freebie Radar. Kiểm tra Running/Healthy, Published Port `LAN_IP:18895:18895/tcp`.
 - Mở `http://LAN_IP:18895` ở điện thoại/máy cùng LAN.
 - Quản trị dùng `ADMIN_TOKEN` trong UI; dòng tin/ưu đãi công khai vẫn có thể xem mà không cần đăng nhập.
 - Cần xem lỗi: Containers → Logs; hoặc truy cập `http://LAN_IP:18895/health` để kiểm tra phản hồi.
