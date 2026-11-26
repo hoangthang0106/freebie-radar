@@ -1,4 +1,4 @@
-# Freebie Radar - Portainer Git stack, single container on next host port 18895.
+# Freebie Radar - Portainer Git stack, single container, host:container 18895:18895.
 # 18894 is allocated to SpiderFoot. Confirm 18895 is actually free on this Docker host.
 # LAN-only: do not forward this port to the internet.
 # The image below is upstream's published image; this fork controls Compose settings.
@@ -9,12 +9,12 @@ services:
     mem_limit: 512m
 
     ports:
-      - "${LAN_IP:?SET_DOCKER_HOST_LAN_IP}:${RADAR_HOST_PORT:-18895}:8788/tcp"
+      - "${LAN_IP:?SET_DOCKER_HOST_LAN_IP}:${RADAR_HOST_PORT:-18895}:18895/tcp"
 
     environment:
       NODE_ENV: "production"
       HOST: "0.0.0.0"
-      PORT: "8788"
+      PORT: "18895"
       DATABASE_PATH: "/data/radar.db"
       TZ: "Asia/Ho_Chi_Minh"
       SITE_MODE: "selfhost"
@@ -39,7 +39,7 @@ services:
         max-file: "3"
 
     healthcheck:
-      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:8788/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:18895/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
       interval: 30s
       timeout: 5s
       retries: 3
