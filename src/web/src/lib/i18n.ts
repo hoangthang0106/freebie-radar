@@ -51,7 +51,7 @@ function isLang(value: unknown): value is Lang {
 }
 
 function detectLang(): Lang {
-  if (typeof window === "undefined") return "zh";
+  if (typeof window === "undefined") return "en";
   try {
     const fromUrl = new URLSearchParams(window.location.search).get("lang");
     if (isLang(fromUrl)) {
@@ -60,14 +60,13 @@ function detectLang(): Lang {
     }
     const saved = window.localStorage.getItem(STORAGE_KEY);
     if (isLang(saved)) return saved;
-    const nav = (window.navigator.language || "").toLowerCase();
-    if (nav.startsWith("zh")) return "zh";
-    // 非中文浏览器默认英文；中文用户首次访问不会被翻转
-    if (nav.length > 0) return "en";
+    // IT-MANAGER fork: default the UI to English on first visit,
+    // regardless of the browser's preferred locale.
+    // Explicit ?lang=zh / ?lang=en and user-saved preferences still take priority.
   } catch {
     /* 隐私模式下 localStorage 会抛错，忽略即可 */
   }
-  return "zh";
+  return "en";
 }
 
 let lang: Lang = detectLang();
