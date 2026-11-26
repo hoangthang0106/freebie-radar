@@ -9,7 +9,7 @@ services:
     mem_limit: 512m
 
     ports:
-      - "${LAN_IP:?SET_DOCKER_HOST_LAN_IP}:${RADAR_HOST_PORT:-18895}:18895/tcp"
+      - "${LAN_IP:?SET_DOCKER_HOST_LAN_IP}:18895:18895/tcp"
 
     environment:
       NODE_ENV: "production"
