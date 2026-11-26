@@ -1,52 +1,49 @@
+# Freebie Radar - Portainer Git stack, single container on next host port 18895.
+# 18894 is allocated to SpiderFoot. Confirm 18895 is actually free on this Docker host.
+# LAN-only: do not forward this port to the internet.
+# The image below is upstream's published image; this fork controls Compose settings.
 services:
   radar:
-    build: .
-    # 默认用 Docker Hub 官方镜像；改 .env 的 RADAR_IMAGE 可固定到 v1.1.0 或某个 git 短 SHA。
-    # 需要从源码构建时执行 docker compose up -d --build，构建产物同样打这个标签。
     image: ${RADAR_IMAGE:-zichuanlan/freebie-radar:latest}
     restart: unless-stopped
-    mem_limit: 256m
+    mem_limit: 512m
+
     ports:
-      - "${BIND_ADDRESS:-127.0.0.1}:${PORT:-8788}:8788"
+      - "${LAN_IP:?SET_DOCKER_HOST_LAN_IP}:${RADAR_HOST_PORT:-18895}:8788/tcp"
+
+    environment:
+      NODE_ENV: "production"
+      HOST: "0.0.0.0"
+      PORT: "8788"
+      DATABASE_PATH: "/data/radar.db"
+      TZ: "Asia/Ho_Chi_Minh"
+      SITE_MODE: "selfhost"
+      ADMIN_TOKEN: "${ADMIN_TOKEN:?SET_STRONG_ADMIN_TOKEN}"
+      ENABLE_SCHEDULER: "true"
+      PUSH_CHANNEL: "none"
+      TRUST_PROXY: "false"
+      WEBHOOK_ALLOW_PRIVATE: "false"
+
+    volumes:
+      - radar_data:/data
+
     security_opt:
       - no-new-privileges:true
     cap_drop:
       - ALL
-    environment:
-      PORT: "8788"
-      HOST: "0.0.0.0"
-      DATABASE_PATH: /data/radar.db
-      TZ: ${TZ:-Asia/Shanghai}
-    env_file:
-      - path: .env
-        required: false
-    volumes:
-      - ./data:/data
+
     logging:
       driver: json-file
       options:
         max-size: "10m"
         max-file: "3"
+
     healthcheck:
       test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:8788/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
       interval: 30s
       timeout: 5s
       retries: 3
-      start_period: 10s
+      start_period: 15s
 
-  # 可选：采集 linux.do 等带 Cloudflare 护盾的站点时可一起启动：
-  # docker compose --profile cf up -d --build
-  # 并在 .env 设置 FLARESOLVERR_URL=http://flaresolverr:8191
-  flaresolverr:
-    image: ghcr.io/flaresolverr/flaresolverr:latest
-    profiles: ["cf"]
-    restart: unless-stopped
-    mem_limit: 400m
-    environment:
-      LOG_LEVEL: info
-      TZ: ${TZ:-Asia/Shanghai}
-    logging:
-      driver: json-file
-      options:
-        max-size: "10m"
-        max-file: "3"
+volumes:
+  radar_data:
