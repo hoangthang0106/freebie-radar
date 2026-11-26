@@ -50,6 +50,16 @@ Tùy chọn `RADAR_IMAGE` để pin phiên bản upstream; mặc định `zichua
 - Quản trị dùng `ADMIN_TOKEN` trong UI; dòng tin/ưu đãi công khai vẫn có thể xem mà không cần đăng nhập.
 - Cần xem lỗi: Containers → Logs; hoặc truy cập `http://LAN_IP:18895/health` để kiểm tra phản hồi.
 
+## English interface and international software sources
+
+**For the currently running Portainer image (no rebuild needed)**: open `http://LAN_IP:18895/?lang=en`. This writes `radar.lang=en` to the browser's localStorage and persists for that browser. The UI's language switch can also choose English (EN). If a browser previously saved `zh`, opening `?lang=en` overrides it.
+
+The fork's source files `src/web/src/lib/i18n.ts` and `src/web/index.html` now default to English for first visits and English metadata. **Important**: the deployment Compose still uses `zichuanlan/freebie-radar:latest` (upstream published image). A Git-only compose redeploy will NOT load this changed fork frontend source. Build/publish an image from this fork and update `RADAR_IMAGE` only if source-level default English in the image is required; do not assume editing GitHub changes an already-running upstream image.
+
+**International content, not just interface**: the public RSS items remain in each original publisher's language. In the application's Data Sources / Sources Operations panel, turn off Chinese-centric sources such as LINUX DO, NodeSeek, V2EX, NGA, Bilibili, Chinese-hosting RSS and Chinese news if they aren't desired. Keep/enable international sources such as Epic, Steam, GOG, GamerPower, CheapShark, IsThereAnyDeal, Giveaway of the Day, SharewareOnSale, Reddit r/AppHookup, and other English-language feeds. The availability of these sources may vary; inspect fetch status. This is a UI operation in the existing DB, no code rebuild is required.
+
+The built-in English dictionary uses Chinese strings as lookup keys and falls back to the original Chinese for missing entries; some untranslated interface strings or Chinese publisher content may still appear. Translating publisher articles requires a separate content translation step, not merely setting `lang=en`.
+
 ## Bảo mật
 
 - Không NAT port 18895 ra Internet. Nếu cần từ xa, dùng VPN/HTTPS.
